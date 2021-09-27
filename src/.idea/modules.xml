@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src.iml" filepath="$PROJECT_DIR$/.idea/modules/src.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Water_Analyst.iml" filepath="$PROJECT_DIR$/.idea/modules/Water_Analyst.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Water_Analyst.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Water_Analyst.app.iml" />
     </modules>
   </component>
 </project>
