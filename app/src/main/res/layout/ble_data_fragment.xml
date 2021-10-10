@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.PlaceholderFragment">
+    tools:context=".ui.main.BLEFragment">
 
     <TextView
         android:id="@+id/section_label"
@@ -18,6 +18,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        tools:layout_constraintTop_creator="1"
+        android:textStyle="bold"
+        android:textSize="18sp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

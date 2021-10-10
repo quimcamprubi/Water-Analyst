@@ -9,15 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.iot.wateranalyst.R
-import com.iot.wateranalyst.databinding.FragmentMainBinding
+import com.iot.wateranalyst.databinding.ResultsFragmentBinding
+import com.iot.wateranalyst.ui.main.PageViewModel
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class PlaceholderFragment : Fragment() {
+class ResultsFragment : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
-    private var _binding: FragmentMainBinding? = null
+    private var _binding: ResultsFragmentBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -35,13 +36,12 @@ class PlaceholderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        _binding = ResultsFragmentBinding.inflate(inflater, container, false)
         val root = binding.root
 
         val textView: TextView = binding.sectionLabel
-        pageViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        textView.text = getString(R.string.tab_welcome_2)
+
         return root
     }
 
@@ -57,8 +57,8 @@ class PlaceholderFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): PlaceholderFragment {
-            return PlaceholderFragment().apply {
+        fun newInstance(sectionNumber: Int): ResultsFragment {
+            return ResultsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_SECTION_NUMBER, sectionNumber)
                 }
