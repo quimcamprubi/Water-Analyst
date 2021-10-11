@@ -1,10 +1,19 @@
 package com.iot.wateranalyst.ui.main
 
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothAdapter.getDefaultAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +24,9 @@ import com.iot.wateranalyst.ui.main.PageViewModel
 /**
  * A placeholder fragment containing a simple view.
  */
+private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 class BLEFragment : Fragment() {
+    
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: BleDataFragmentBinding? = null

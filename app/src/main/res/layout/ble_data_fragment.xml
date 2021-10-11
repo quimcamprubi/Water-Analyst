@@ -22,4 +22,18 @@
         android:textStyle="bold"
         android:textSize="18sp"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/section_label"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:text="@string/download_bl_data"
+        android:drawableEnd="@android:drawable/stat_sys_data_bluetooth"
+        android:paddingTop="@dimen/button_padding"
+        android:paddingBottom="@dimen/button_padding" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

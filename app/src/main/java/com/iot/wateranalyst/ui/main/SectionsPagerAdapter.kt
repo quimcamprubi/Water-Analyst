@@ -20,8 +20,8 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int) = when(position) {
-        0 -> BLEFragment()
-        else -> ResultsFragment()
+        1 -> ResultsFragment()
+        else -> BLEFragment()
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
