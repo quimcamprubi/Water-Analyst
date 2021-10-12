@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintTop_creator="1"
-        android:textStyle="bold"
-        android:textSize="18sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

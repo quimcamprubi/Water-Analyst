@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.main.BLEFragment">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.iot.wateranalyst.ui.main.BLEFragmentViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/section_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:text="@string/tab_welcome_1"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/ble_scan_stop_button"
+            android:visibility="visible"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/section_label"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:text="@{viewModel.isScanning? @string/stop_scan: @string/scan_for_ble_devices}"
+            android:padding="@dimen/button_padding"
+            app:cornerRadius="@dimen/corner_radius"
+            android:backgroundTint="@{viewModel.isScanning? @color/red : @color/green}"
+            android:textColor="@{viewModel.isScanning? @color/white : @color/black}"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/download_data_button"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/section_label"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:text="@string/download_bl_data"
+            android:drawableEnd="@android:drawable/stat_sys_data_bluetooth"
+            android:paddingTop="@dimen/button_padding"
+            android:paddingBottom="@dimen/button_padding" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
