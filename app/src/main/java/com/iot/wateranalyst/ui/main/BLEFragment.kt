@@ -1,6 +1,7 @@
 package com.iot.wateranalyst.ui.main
 
 import android.Manifest
+import android.Manifest.permission.*
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
@@ -13,24 +14,26 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.button.MaterialButton
 import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.BleFragmentLayoutBinding
+import kotlinx.android.synthetic.main.ble_fragment_layout.*
+import timber.log.Timber
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
-
 
 class BLEFragment : Fragment() {
 
@@ -56,9 +59,27 @@ class BLEFragment : Fragment() {
         .build()
 
     private val isLocationPermissionGranted
-        get() = activity?.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        get() = activity?.hasPermission(ACCESS_FINE_LOCATION)
 
     private val binding get() = _binding!!
+
+    private var isScanning = false
+        set(value) {
+            field = value
+        }
+
+    private val scanResults = mutableListOf<ScanResult>()
+    private val scanResultAdapter: ScanResultAdapter by lazy {
+        ScanResultAdapter(scanResults) { result ->
+            if (isScanning) {
+                stopBleScan()
+            }
+            with(result.device) {
+                Timber.w("Connecting to $address")
+                //ConnectionManager.connect(this, this@MainActivity)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,10 +90,10 @@ class BLEFragment : Fragment() {
         val root = binding.root
         val scanButton: MaterialButton = binding.bleScanStopButton
         scanButton.setOnClickListener {
-            if (viewModel.isScanning.value == true) stopBleScan()
+            if (isScanning) stopBleScan()
             else startBleScan()
         }
-
+        setupRecyclerView()
         return root
     }
 
@@ -84,16 +105,7 @@ class BLEFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
         private const val ARG_SECTION_NUMBER = "section_number"
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         @JvmStatic
         fun newInstance(sectionNumber: Int): BLEFragment {
             return BLEFragment().apply {
@@ -130,6 +142,32 @@ class BLEFragment : Fragment() {
         }
     }
 
+    private fun setupRecyclerView() {
+        //val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
+        recyclerView?.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        recyclerView?.isNestedScrollingEnabled = false
+        recyclerView?.adapter = scanResultAdapter
+        val animator = recyclerView?.itemAnimator
+        if (animator is SimpleItemAnimator) {
+            animator.supportsChangeAnimations = false
+        }
+        /*scan_results_recycler_view.apply {
+            adapter = scanResultAdapter
+            layoutManager = LinearLayoutManager(
+                context,
+                RecyclerView.VERTICAL,
+                false
+            )
+            isNestedScrollingEnabled = false
+        }*/
+
+        /*val animator = recyclerView?.itemAnimator
+        if (animator is SimpleItemAnimator) {
+            animator.supportsChangeAnimations = false
+        }*/
+    }
+
     private fun promptEnableBluetooth() {
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -140,7 +178,10 @@ class BLEFragment : Fragment() {
     private fun startBleScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isLocationPermissionGranted == false) requestLocationPermission()
         else {
+            scanResults.clear()
+            scanResultAdapter.notifyDataSetChanged()
             bleScanner.startScan(null, scanSettings, scanCallback) //TODO change filters to listOf(scanFilter) when device UUID is known
+            isScanning = true
             viewModel.isScanning.value = true
         }
     }
@@ -148,21 +189,37 @@ class BLEFragment : Fragment() {
     private fun stopBleScan() {
         bleScanner.stopScan(scanCallback)
         viewModel.isScanning.value = false
+        isScanning = false
     }
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            with (result.device) {
-                Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, MAC address: $address")
+            val indexQuery = scanResults.indexOfFirst { it.device.address == result.device.address }
+            if (indexQuery != -1) { // A scan result already exists with the same address
+                scanResults[indexQuery] = result
+                scanResultAdapter.notifyItemChanged(indexQuery)
+            } else {
+                with(result.device) {
+                    Timber.i("Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
+                }
+                val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
+                scanResults.add(result)
+                scanResultAdapter.notifyItemInserted(scanResults.size - 1)
+                recyclerView?.adapter = scanResultAdapter
             }
         }
+
+        override fun onScanFailed(errorCode: Int) {
+            Timber.e("onScanFailed: code $errorCode")
+        }
     }
+
+    // PERMISSIONS REQUESTS
 
     private fun requestLocationPermission() {
         if (isLocationPermissionGranted == true) {
             return
         }
-
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Location permission required")
             .setMessage(
@@ -173,21 +230,13 @@ class BLEFragment : Fragment() {
             .setPositiveButton(android.R.string.ok,
                 DialogInterface.OnClickListener { dialog, id ->
                     activity?.requestPermission(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        ACCESS_FINE_LOCATION,
                         LOCATION_PERMISSION_REQUEST_CODE
                     )
                 }
             )
             .create()
         builder.show()
-    }
-
-    private fun Activity.requestPermission(permission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
-    }
-
-    private fun Context.hasPermission(permissionType: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permissionType) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
@@ -202,5 +251,15 @@ class BLEFragment : Fragment() {
                 else startBleScan()
             }
         }
+    }
+
+    // PERMISSIONS CHECK
+
+    private fun Activity.requestPermission(permission: String, requestCode: Int) {
+        ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+    }
+
+    private fun Context.hasPermission(permissionType: String): Boolean {
+        return ContextCompat.checkSelfPermission(this, permissionType) == PackageManager.PERMISSION_GRANTED
     }
 }
