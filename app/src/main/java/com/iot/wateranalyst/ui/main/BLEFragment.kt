@@ -143,7 +143,10 @@ class BLEFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        scan_results_recycler_view.apply {
+        scan_results_recycler_view.adapter = scanResultAdapter
+        scan_results_recycler_view.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        scan_results_recycler_view.isNestedScrollingEnabled = false
+        /*scan_results_recycler_view.apply {
             adapter = scanResultAdapter
             layoutManager = LinearLayoutManager(
                 activity,
@@ -151,7 +154,7 @@ class BLEFragment : Fragment() {
                 false
             )
             isNestedScrollingEnabled = false
-        }
+        }*/
 
         val animator = scan_results_recycler_view.itemAnimator
         if (animator is SimpleItemAnimator) {
