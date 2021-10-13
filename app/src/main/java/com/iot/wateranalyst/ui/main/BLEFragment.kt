@@ -143,29 +143,20 @@ class BLEFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        //val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
-        val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
-        recyclerView?.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        recyclerView?.isNestedScrollingEnabled = false
-        recyclerView?.adapter = scanResultAdapter
-        val animator = recyclerView?.itemAnimator
-        if (animator is SimpleItemAnimator) {
-            animator.supportsChangeAnimations = false
-        }
-        /*scan_results_recycler_view.apply {
+        scan_results_recycler_view.apply {
             adapter = scanResultAdapter
             layoutManager = LinearLayoutManager(
-                context,
+                activity,
                 RecyclerView.VERTICAL,
                 false
             )
             isNestedScrollingEnabled = false
-        }*/
+        }
 
-        /*val animator = recyclerView?.itemAnimator
+        val animator = scan_results_recycler_view.itemAnimator
         if (animator is SimpleItemAnimator) {
             animator.supportsChangeAnimations = false
-        }*/
+        }
     }
 
     private fun promptEnableBluetooth() {
@@ -202,10 +193,8 @@ class BLEFragment : Fragment() {
                 with(result.device) {
                     Timber.i("Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
                 }
-                val recyclerView = view?.findViewById<RecyclerView>(R.id.scan_results_recycler_view)
                 scanResults.add(result)
                 scanResultAdapter.notifyItemInserted(scanResults.size - 1)
-                recyclerView?.adapter = scanResultAdapter
             }
         }
 
@@ -230,7 +219,7 @@ class BLEFragment : Fragment() {
             .setPositiveButton(android.R.string.ok,
                 DialogInterface.OnClickListener { dialog, id ->
                     activity?.requestPermission(
-                        ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         LOCATION_PERMISSION_REQUEST_CODE
                     )
                 }
