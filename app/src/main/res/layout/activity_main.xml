@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="?attr/colorPrimary"
             app:tabTextColor="@color/white"
-            app:tabIndicatorColor="?attr/colorOnPrimary"
+            app:tabIndicatorColor="@color/white"
             app:tabIndicatorAnimationMode="elastic"
             app:tabIndicatorHeight="3dp"/>
     </com.google.android.material.appbar.AppBarLayout>
