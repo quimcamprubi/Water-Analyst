@@ -16,12 +16,12 @@ private val TAB_TITLES = arrayOf(
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
+class SectionsPagerAdapter(private val context: Context, fm: FragmentManager, private val isDarkMode: Boolean = false) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int) = when(position) {
         1 -> ResultsFragment()
-        else -> BLEFragment()
+        else -> BLEFragment(isDarkMode)
     }
 
     override fun getPageTitle(position: Int): CharSequence? {

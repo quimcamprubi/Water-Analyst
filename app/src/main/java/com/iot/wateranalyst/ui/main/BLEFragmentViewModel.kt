@@ -12,6 +12,7 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import androidx.annotation.Keep
@@ -33,4 +34,5 @@ class BLEFragmentViewModel(application: Application, ) : AndroidViewModel(applic
 
     private val context = getApplication<Application>().applicationContext
     val isScanning = MutableLiveData<Boolean>(false)
+
 }

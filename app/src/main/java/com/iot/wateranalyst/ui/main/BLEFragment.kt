@@ -13,12 +13,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -35,7 +37,7 @@ import timber.log.Timber
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 
-class BLEFragment : Fragment() {
+class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: BleFragmentLayoutBinding? = null
@@ -69,7 +71,7 @@ class BLEFragment : Fragment() {
         }
 
     private val scanResults = mutableListOf<ScanResult>()
-    private val scanResultAdapter: ScanResultAdapter by lazy {
+    /*private val scanResultAdapter: ScanResultAdapter by lazy {
         ScanResultAdapter(scanResults) { result ->
             if (isScanning) {
                 stopBleScan()
@@ -79,6 +81,10 @@ class BLEFragment : Fragment() {
                 //ConnectionManager.connect(this, this@MainActivity)
             }
         }
+    }*/
+    private val scanResultAdapter = ScanResultAdapter(scanResults, isDarkMode) { result ->
+        if (isScanning) stopBleScan()
+        with(result.device) { Toast.makeText(context, "TODO", Toast.LENGTH_SHORT)}
     }
 
     override fun onCreateView(
@@ -93,8 +99,13 @@ class BLEFragment : Fragment() {
             if (isScanning) stopBleScan()
             else startBleScan()
         }
-        setupRecyclerView()
+        //setupRecyclerView()
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

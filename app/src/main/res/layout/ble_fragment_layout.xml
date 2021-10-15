@@ -28,13 +28,13 @@
             tools:layout_constraintLeft_creator="1"
             tools:layout_constraintTop_creator="1"
             android:textSize="16sp"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnSecondary"
             android:text="@string/tab_welcome_1"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ble_scan_stop_button"
             android:visibility="visible"
-            android:layout_width="175dp"
+            android:layout_width="290dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/section_label"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -44,8 +44,13 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:text="@{viewModel.isScanning? @string/stop_scan: @string/scan_for_ble_devices}"
-            android:padding="@dimen/button_padding"
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingRight="@dimen/button_padding"
+            android:paddingTop="@dimen/margin_18"
+            android:paddingBottom="@dimen/margin_18"
             app:cornerRadius="@dimen/corner_radius"
+            android:textSize="18sp"
+            tools:text="Button"
             android:backgroundTint="@{viewModel.isScanning? @color/red : @color/green}"
             android:textColor="@{viewModel.isScanning? @color/white : @color/black}"/>
 
