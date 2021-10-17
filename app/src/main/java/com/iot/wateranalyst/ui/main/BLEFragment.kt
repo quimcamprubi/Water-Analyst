@@ -4,8 +4,7 @@ import android.Manifest
 import android.Manifest.permission.*
 import android.app.Activity
 import android.app.AlertDialog
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
+import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
@@ -16,6 +15,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,13 +37,16 @@ import timber.log.Timber
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
+private const val GATT_MAX_MTU_SIZE = 517
 
 class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: BleFragmentLayoutBinding? = null
     private lateinit var viewModel: BLEFragmentViewModel
-
+    private lateinit var gattObject: BluetoothGatt
+    private lateinit var bluetoothGatt: BluetoothGatt
+    private var isBluetoothConnected: Boolean = false
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         val bluetoothManager = activity?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
@@ -71,20 +75,12 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
         }
 
     private val scanResults = mutableListOf<ScanResult>()
-    /*private val scanResultAdapter: ScanResultAdapter by lazy {
-        ScanResultAdapter(scanResults) { result ->
-            if (isScanning) {
-                stopBleScan()
-            }
-            with(result.device) {
-                Timber.w("Connecting to $address")
-                //ConnectionManager.connect(this, this@MainActivity)
-            }
-        }
-    }*/
     private val scanResultAdapter = ScanResultAdapter(scanResults, isDarkMode) { result ->
         if (isScanning) stopBleScan()
-        with(result.device) { Toast.makeText(context, "TODO", Toast.LENGTH_SHORT)}
+        with(result.device) {
+            if (!isBluetoothConnected) gattObject = connectGatt(context, false, gattCallback)
+            else gattObject.disconnect()
+        }
     }
 
     override fun onCreateView(
@@ -157,15 +153,6 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
         scan_results_recycler_view.adapter = scanResultAdapter
         scan_results_recycler_view.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         scan_results_recycler_view.isNestedScrollingEnabled = false
-        /*scan_results_recycler_view.apply {
-            adapter = scanResultAdapter
-            layoutManager = LinearLayoutManager(
-                activity,
-                RecyclerView.VERTICAL,
-                false
-            )
-            isNestedScrollingEnabled = false
-        }*/
 
         val animator = scan_results_recycler_view.itemAnimator
         if (animator is SimpleItemAnimator) {
@@ -214,6 +201,59 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
         override fun onScanFailed(errorCode: Int) {
             Timber.e("onScanFailed: code $errorCode")
+        }
+    }
+
+    private val gattCallback = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            super.onConnectionStateChange(gatt, status, newState)
+            val showableName = when(gatt.device.name) {
+                null -> gatt.device.address
+                else -> gatt.device.name
+            }
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    Timber.i("BluetoothGattCallback: Successfully connected to $showableName!")
+                    activity?.runOnUiThread{ Toast.makeText(context, "Successfully connected to $showableName!", Toast.LENGTH_SHORT).show() }
+                    bluetoothGatt = gatt
+                    Handler(Looper.getMainLooper()).post {
+                        bluetoothGatt.discoverServices()
+                    }
+                    isBluetoothConnected = true
+                }
+                else if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                    Timber.i("BluetoothGattCallback: Successfully disconnected from $showableName!")
+                    activity?.runOnUiThread{ Toast.makeText(context, "Successfully disconnected from $showableName!", Toast.LENGTH_SHORT).show() }
+                    isBluetoothConnected = false
+                    gatt.close()
+                }
+                else {
+                    Timber.i("BluetoothGattCallback: Error $status encountered for $showableName. Disconnecting...")
+                    activity?.runOnUiThread{ Toast.makeText(activity?.applicationContext, "Error $status encountered for $showableName. Disconnecting...", Toast.LENGTH_SHORT).show() }
+                    isBluetoothConnected = false
+                    gatt.close()
+                }
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            super.onServicesDiscovered(gatt, status)
+            gatt?.printGattTable()
+            // Connection complete
+        }
+
+        private fun BluetoothGatt.printGattTable() {
+            if (services.isEmpty()) {
+                Log.i("printGattTable", "No service and characteristic available, call discoverServices() first?")
+                return
+            }
+            services.forEach { service ->
+                val characteristicsTable = service.characteristics.joinToString(
+                    separator = "\n|--",
+                    prefix = "|--"
+                ) { it.uuid.toString() }
+                Log.i("printGattTable", "\nService ${service.uuid}\nCharacteristics:\n$characteristicsTable")
+            }
         }
     }
 

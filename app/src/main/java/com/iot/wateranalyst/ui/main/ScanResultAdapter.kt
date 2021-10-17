@@ -40,7 +40,7 @@ class ScanResultAdapter(
             view.name.text = result.device.name ?: "Unnamed"
             view.mac_address.text = result.device.address
             view.signal_strength.text = "${result.rssi} dBm"
-            //view.setOnClickListener { onClickListener.invoke(result) }
+            view.setOnClickListener { onClickListener.invoke(result) }
         }
     }
 }
