@@ -54,22 +54,6 @@
             android:backgroundTint="@{viewModel.isScanning? @color/red : @color/green}"
             android:textColor="@{viewModel.isScanning? @color/white : @color/black}"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/download_data_button"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/section_label"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:text="@string/download_bl_data"
-            android:drawableEnd="@android:drawable/stat_sys_data_bluetooth"
-            android:paddingTop="@dimen/button_padding"
-            android:paddingBottom="@dimen/button_padding" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/scan_results_recycler_view"
             android:layout_width="0dp"
@@ -81,6 +65,30 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:listitem="@layout/scanned_device_row"
             />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/read_data_button"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:text="@string/read_bl_data"
+            android:visibility="gone"
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingRight="@dimen/button_padding"
+            android:paddingTop="@dimen/margin_18"
+            android:paddingBottom="@dimen/margin_18"
+            app:cornerRadius="@dimen/corner_radius"
+            android:textSize="18sp"
+            tools:text="Button"
+            android:textColor="@color/white"/>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

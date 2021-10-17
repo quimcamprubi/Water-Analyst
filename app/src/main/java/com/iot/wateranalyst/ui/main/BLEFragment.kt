@@ -13,6 +13,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -34,6 +36,7 @@ import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.BleFragmentLayoutBinding
 import kotlinx.android.synthetic.main.ble_fragment_layout.*
 import timber.log.Timber
+import java.util.*
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
@@ -218,6 +221,11 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                     bluetoothGatt = gatt
                     Handler(Looper.getMainLooper()).post {
                         bluetoothGatt.discoverServices()
+                        bluetoothGatt.requestMtu(GATT_MAX_MTU_SIZE)
+                        binding.readDataButton.visibility=View.VISIBLE
+                        binding.readDataButton.setOnClickListener {
+                            readBoardData()
+                        }
                     }
                     isBluetoothConnected = true
                 }
@@ -242,6 +250,11 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
             // Connection complete
         }
 
+        override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
+            super.onMtuChanged(gatt, mtu, status)
+            Timber.i("ATT MTU changed to $mtu, success: ${status == BluetoothGatt.GATT_SUCCESS}")
+        }
+
         private fun BluetoothGatt.printGattTable() {
             if (services.isEmpty()) {
                 Log.i("printGattTable", "No service and characteristic available, call discoverServices() first?")
@@ -253,6 +266,28 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                     prefix = "|--"
                 ) { it.uuid.toString() }
                 Log.i("printGattTable", "\nService ${service.uuid}\nCharacteristics:\n$characteristicsTable")
+            }
+        }
+
+        private fun readBoardData() {
+            val writeServiceUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+            val notifyServiceUuid = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+            val responseChar = gattObject.getService(writeServiceUuid)?.getCharacteristic(notifyServiceUuid)
+            if (responseChar?.isWritable() == true) bluetoothGatt.writeCharacteristic(responseChar)
+        }
+
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?,
+            status: Int
+        ) {
+            super.onCharacteristicWrite(gatt, characteristic, status)
+            with(characteristic) {
+                when(status) {
+                    BluetoothGatt.GATT_SUCCESS -> activity?.runOnUiThread{ Toast.makeText(context, "Response: ${this?.value?.toString()}", Toast.LENGTH_SHORT).show() }
+                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> activity?.runOnUiThread{ Toast.makeText(context, "Response: ${this?.value?.toString()}", Toast.LENGTH_SHORT).show() }
+                    else -> activity?.runOnUiThread{ Toast.makeText(context, "Error: $status", Toast.LENGTH_SHORT).show() }
+                }
             }
         }
     }
@@ -297,6 +332,11 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     }
 
     // PERMISSIONS CHECK
+
+    fun BluetoothGattCharacteristic.isReadable(): Boolean = containsProperty(BluetoothGattCharacteristic.PROPERTY_READ)
+    fun BluetoothGattCharacteristic.isWritable(): Boolean = containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE)
+    fun BluetoothGattCharacteristic.isWritableWithoutResponse(): Boolean = containsProperty(BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)
+    private fun BluetoothGattCharacteristic.containsProperty(property: Int): Boolean { return properties and property != 0 }
 
     private fun Activity.requestPermission(permission: String, requestCode: Int) {
         ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
