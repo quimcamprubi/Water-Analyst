@@ -5,15 +5,16 @@ import android.Manifest.permission.*
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.*
+import android.bluetooth.BluetoothDevice.TRANSPORT_LE
+import android.bluetooth.BluetoothGattCharacteristic.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -21,7 +22,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -32,11 +32,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.button.MaterialButton
-import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.BleFragmentLayoutBinding
 import kotlinx.android.synthetic.main.ble_fragment_layout.*
 import timber.log.Timber
 import java.util.*
+
 
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
@@ -47,9 +47,10 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     private lateinit var pageViewModel: PageViewModel
     private var _binding: BleFragmentLayoutBinding? = null
     private lateinit var viewModel: BLEFragmentViewModel
-    private lateinit var gattObject: BluetoothGatt
     private lateinit var bluetoothGatt: BluetoothGatt
     private var isBluetoothConnected: Boolean = false
+    private lateinit var commandQueue: Queue<Runnable>
+    private var commandQueueBusy = false
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         val bluetoothManager = activity?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
@@ -81,8 +82,8 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     private val scanResultAdapter = ScanResultAdapter(scanResults, isDarkMode) { result ->
         if (isScanning) stopBleScan()
         with(result.device) {
-            if (!isBluetoothConnected) gattObject = connectGatt(context, false, gattCallback)
-            else gattObject.disconnect()
+            if (!isBluetoothConnected) bluetoothGatt = this.connectGatt(context, false, gattCallback, TRANSPORT_LE)
+            else bluetoothGatt.disconnect()
         }
     }
 
@@ -129,6 +130,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        bluetoothGatt.close()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -218,36 +220,40 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     Timber.i("BluetoothGattCallback: Successfully connected to $showableName!")
                     activity?.runOnUiThread{ Toast.makeText(context, "Successfully connected to $showableName!", Toast.LENGTH_SHORT).show() }
+                    isBluetoothConnected = true
                     bluetoothGatt = gatt
+                    viewModel.isBluetoothConnected.postValue(true)
                     Handler(Looper.getMainLooper()).post {
-                        bluetoothGatt.discoverServices()
-                        bluetoothGatt.requestMtu(GATT_MAX_MTU_SIZE)
                         binding.readDataButton.visibility=View.VISIBLE
+                        gatt.discoverServices()
+                        gatt.requestMtu(GATT_MAX_MTU_SIZE)
                         binding.readDataButton.setOnClickListener {
-                            readBoardData()
+                            readBoardData(gatt)
                         }
                     }
-                    isBluetoothConnected = true
                 }
                 else if (newState == BluetoothProfile.STATE_DISCONNECTED){
                     Timber.i("BluetoothGattCallback: Successfully disconnected from $showableName!")
                     activity?.runOnUiThread{ Toast.makeText(context, "Successfully disconnected from $showableName!", Toast.LENGTH_SHORT).show() }
                     isBluetoothConnected = false
+                    viewModel.isBluetoothConnected.postValue(false)
                     gatt.close()
                 }
                 else {
                     Timber.i("BluetoothGattCallback: Error $status encountered for $showableName. Disconnecting...")
                     activity?.runOnUiThread{ Toast.makeText(activity?.applicationContext, "Error $status encountered for $showableName. Disconnecting...", Toast.LENGTH_SHORT).show() }
                     isBluetoothConnected = false
+                    viewModel.isBluetoothConnected.postValue(false)
+                    gatt.disconnect()
                     gatt.close()
                 }
             }
         }
 
+
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             super.onServicesDiscovered(gatt, status)
             gatt?.printGattTable()
-            // Connection complete
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt?, mtu: Int, status: Int) {
@@ -269,11 +275,13 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
             }
         }
 
-        private fun readBoardData() {
-            val writeServiceUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-            val notifyServiceUuid = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
-            val responseChar = gattObject.getService(writeServiceUuid)?.getCharacteristic(notifyServiceUuid)
-            if (responseChar?.isWritable() == true) bluetoothGatt.writeCharacteristic(responseChar)
+        private fun readBoardData(gattObject: BluetoothGatt?) {
+            val writeServiceUuid = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+            val notifyServiceUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+            val characteristic = gattObject?.getService(writeServiceUuid)?.getCharacteristic(notifyServiceUuid)
+            characteristic?.setValue("0")
+            characteristic?.writeType= PROPERTY_WRITE_NO_RESPONSE
+            if (characteristic?.isWritable() == true) gattObject.writeCharacteristic(characteristic)
         }
 
         override fun onCharacteristicWrite(
@@ -290,6 +298,8 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                 }
             }
         }
+
+        override fun on
     }
 
     // PERMISSIONS REQUESTS

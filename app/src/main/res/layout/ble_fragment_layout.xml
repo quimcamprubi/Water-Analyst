@@ -18,9 +18,9 @@
             android:id="@+id/section_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/margin_12"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/margin_12"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -29,7 +29,7 @@
             tools:layout_constraintTop_creator="1"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSecondary"
-            android:text="@string/tab_welcome_1"/>
+            android:text="@{viewModel.isBluetoothConnected? @string/read_bl_data_subtitle: @string/tab_welcome_1}"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ble_scan_stop_button"

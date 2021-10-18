@@ -34,5 +34,6 @@ class BLEFragmentViewModel(application: Application, ) : AndroidViewModel(applic
 
     private val context = getApplication<Application>().applicationContext
     val isScanning = MutableLiveData<Boolean>(false)
+    val isBluetoothConnected = MutableLiveData<Boolean>(false)
 
 }

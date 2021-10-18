@@ -8,5 +8,6 @@
     <string name="stop_scan">Stop scanning</string>
     <string name="download_bl_data">Download data using Bluetooth</string>
     <string name="read_bl_data">Read data</string>
+    <string name="read_bl_data_subtitle">You can now read the Device\'s data</string>
     <string name="unsupported_device">Your device doesn\'t support Bluetooth</string>
 </resources>
