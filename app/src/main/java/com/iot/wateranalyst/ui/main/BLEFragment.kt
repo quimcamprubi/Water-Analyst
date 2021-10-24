@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothGattCharacteristic.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -41,6 +40,10 @@ import java.util.*
 private const val ENABLE_BLUETOOTH_REQUEST_CODE = 1
 private const val LOCATION_PERMISSION_REQUEST_CODE = 2
 private const val GATT_MAX_MTU_SIZE = 517
+private const val NORDIC_UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+private const val RX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+private const val TX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+private const val TX_DESCRIPTOR_UUID = "00002902-0000-1000-8000-00805f9b34fb"
 
 class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
@@ -49,8 +52,8 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     private lateinit var viewModel: BLEFragmentViewModel
     private lateinit var bluetoothGatt: BluetoothGatt
     private var isBluetoothConnected: Boolean = false
-    private lateinit var commandQueue: Queue<Runnable>
-    private var commandQueueBusy = false
+    private var resultArray = arrayListOf<Byte>()
+    private var receivedData = 0
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         val bluetoothManager = activity?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
@@ -130,7 +133,6 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        bluetoothGatt.close()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -228,7 +230,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                         gatt.discoverServices()
                         gatt.requestMtu(GATT_MAX_MTU_SIZE)
                         binding.readDataButton.setOnClickListener {
-                            readBoardData(gatt)
+                            setNotificationsAndRead(gatt)
                         }
                     }
                 }
@@ -275,13 +277,24 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
             }
         }
 
-        private fun readBoardData(gattObject: BluetoothGatt?) {
-            val writeServiceUuid = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-            val notifyServiceUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-            val characteristic = gattObject?.getService(writeServiceUuid)?.getCharacteristic(notifyServiceUuid)
-            characteristic?.setValue("0")
-            characteristic?.writeType= PROPERTY_WRITE_NO_RESPONSE
-            if (characteristic?.isWritable() == true) gattObject.writeCharacteristic(characteristic)
+        private fun setNotificationsAndRead(gattObject: BluetoothGatt?) {
+            val serviceUuid = UUID.fromString(NORDIC_UART_SERVICE_UUID)
+            val notifyCharacteristicUuid = UUID.fromString(TX_CHARACTERISTIC_UUID)
+            val notifyCharacteristic = gattObject?.getService(serviceUuid)?.getCharacteristic(notifyCharacteristicUuid)
+            gattObject?.setCharacteristicNotification(notifyCharacteristic, true)
+            val descriptor = notifyCharacteristic?.getDescriptor(UUID.fromString(TX_DESCRIPTOR_UUID))
+            descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+            gattObject?.writeDescriptor(descriptor)
+
+            val writeCharacteristicUuid = UUID.fromString(RX_CHARACTERISTIC_UUID)
+            val writeCharacteristic = gattObject?.getService(serviceUuid)?.getCharacteristic(writeCharacteristicUuid)
+            //writeCharacteristic?.setValue(0x0, android.bluetooth.BluetoothGattCharacteristic.FORMAT_SINT32, 0)
+            writeCharacteristic?.setValue("0")
+            writeCharacteristic?.writeType = WRITE_TYPE_NO_RESPONSE
+            if (writeCharacteristic?.isWritableWithoutResponse() == true)
+                gattObject.writeCharacteristic(writeCharacteristic)
+            else
+                activity?.runOnUiThread { Log.i("writeCharacteristic","This device doesn't support the default write BLE characteristic.") }
         }
 
         override fun onCharacteristicWrite(
@@ -292,14 +305,65 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
             super.onCharacteristicWrite(gatt, characteristic, status)
             with(characteristic) {
                 when(status) {
-                    BluetoothGatt.GATT_SUCCESS -> activity?.runOnUiThread{ Toast.makeText(context, "Response: ${this?.value?.toString()}", Toast.LENGTH_SHORT).show() }
-                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> activity?.runOnUiThread{ Toast.makeText(context, "Response: ${this?.value?.toString()}", Toast.LENGTH_SHORT).show() }
-                    else -> activity?.runOnUiThread{ Toast.makeText(context, "Error: $status", Toast.LENGTH_SHORT).show() }
+                    BluetoothGatt.GATT_SUCCESS -> Log.i("onCharacteristicWrite","Response: ${String(characteristic!!.value)}")
+                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> Log.i("onCharacteristicWrite","Response: ${String(characteristic!!.value)}")
+                    else -> Log.i("onCharacteristicWrite","Error: $status")
                 }
             }
         }
 
-        override fun on
+        override fun onDescriptorWrite(
+            gatt: BluetoothGatt?,
+            descriptor: BluetoothGattDescriptor?,
+            status: Int
+        ) {
+            super.onDescriptorWrite(gatt, descriptor, status)
+            if(descriptor?.uuid?.equals(UUID.fromString(TX_DESCRIPTOR_UUID)) == true) {
+                with(descriptor) {
+                    when(status) {
+                        BluetoothGatt.GATT_SUCCESS -> {
+                            Log.i("onDescriptorWrite", "Notify descriptor set correctly")
+                            val serviceUuid = UUID.fromString(NORDIC_UART_SERVICE_UUID)
+                            val writeCharacteristicUuid = UUID.fromString(RX_CHARACTERISTIC_UUID)
+                            val writeCharacteristic = gatt?.getService(serviceUuid)?.getCharacteristic(writeCharacteristicUuid)
+                            writeCharacteristic?.setValue("0")
+                            writeCharacteristic?.writeType = WRITE_TYPE_NO_RESPONSE
+                            if (writeCharacteristic?.isWritableWithoutResponse() == true) gatt.writeCharacteristic(writeCharacteristic)
+                            else Log.i("writeCharacteristic","This device doesn't support the default write BLE characteristic.")
+                        }
+                        BluetoothGatt.GATT_READ_NOT_PERMITTED -> Log.i("onDescriptorWrite","Notify descriptor set not permitted ${this?.value.toString()}")
+                        else -> Log.i("onDescriptorWrite","Error: $status")
+                    }
+                }
+            }
+        }
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?
+        ) {
+            super.onCharacteristicChanged(gatt, characteristic)
+            val newValue = characteristic!!.value
+            resultArray.addAll(newValue.asList())
+            receivedData++
+            if (characteristic.uuid?.equals(UUID.fromString(TX_CHARACTERISTIC_UUID)) == true && receivedData > 1)
+            {
+                activity?.runOnUiThread { Toast.makeText(context, resultArray.toByteArray().decodeToString(), Toast.LENGTH_LONG).show() }
+                Log.i("onCharacteristicChanged","Returned value = ${resultArray.toByteArray().decodeToString()}")
+                receivedData = 0
+                resultArray.clear()
+            }
+        }
+
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt?,
+            characteristic: BluetoothGattCharacteristic?,
+            status: Int
+        ) {
+            super.onCharacteristicRead(gatt, characteristic, status)
+            Log.i("onCharacteristicRead","Returned value = ${characteristic?.value}")
+        }
+
     }
 
     // PERMISSIONS REQUESTS
