@@ -4,10 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 
-class BLEFragmentViewModel(application: Application, ) : AndroidViewModel(application) {
+class ResultsFragmentViewModel(application: Application, ) : AndroidViewModel(application) {
 
     private val context = getApplication<Application>().applicationContext
-    val isScanning = MutableLiveData<Boolean>(false)
-    val isBluetoothConnected = MutableLiveData<Boolean>(false)
+    val isDataReceived = MutableLiveData<Boolean>(false)
 
 }

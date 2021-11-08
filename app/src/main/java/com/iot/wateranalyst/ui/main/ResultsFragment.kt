@@ -10,15 +10,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.ResultsFragmentBinding
-import com.iot.wateranalyst.ui.main.PageViewModel
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class ResultsFragment : Fragment() {
+class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: ResultsFragmentBinding? = null
+    private lateinit var viewModel: ResultsFragmentViewModel
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,6 +43,12 @@ class ResultsFragment : Fragment() {
         textView.text = getString(R.string.tab_welcome_2)
 
         return root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(ResultsFragmentViewModel::class.java)
+        binding.viewModel = viewModel
     }
 
     companion object {

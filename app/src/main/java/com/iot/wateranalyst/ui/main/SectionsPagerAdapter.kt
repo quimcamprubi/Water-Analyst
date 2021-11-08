@@ -20,7 +20,7 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager, pr
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int) = when(position) {
-        1 -> ResultsFragment()
+        1 -> ResultsFragment(isDarkMode)
         else -> BLEFragment(isDarkMode)
     }
 
