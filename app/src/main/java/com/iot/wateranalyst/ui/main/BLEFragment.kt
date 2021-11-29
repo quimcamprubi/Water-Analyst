@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.button.MaterialButton
+import com.iot.wateranalyst.MainActivity
 import com.iot.wateranalyst.databinding.BleFragmentLayoutBinding
 import kotlinx.android.synthetic.main.ble_fragment_layout.*
 import timber.log.Timber
@@ -294,8 +295,8 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
             else
                 activity?.runOnUiThread { Log.i("writeCharacteristic","This device doesn't support the default write BLE characteristic.") }
 
-            Thread.sleep(250)
-            activity?.runOnUiThread { Toast.makeText(context, resultArray.toByteArray().decodeToString(), Toast.LENGTH_SHORT).show() }
+            Thread.sleep(500)
+            (activity as MainActivity).nextFragment(resultArray)
             resultArray.clear()
         }
 

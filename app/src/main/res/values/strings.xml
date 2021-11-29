@@ -8,7 +8,17 @@
     <string name="stop_scan">Stop scanning</string>
     <string name="download_bl_data">Download data using Bluetooth</string>
     <string name="read_bl_data">Read data</string>
-    <string name="read_bl_data_subtitle">You must first read the Device\'s data before analysis can be carreid out</string>
+    <string name="read_bl_data_subtitle">You must first read the Device\'s data before analysis can be carried out</string>
     <string name="water_components_read_title">Water components read:</string>
     <string name="unsupported_device">Your device doesn\'t support Bluetooth</string>
+    <string name="components_card_title">Analyzed water</string>
+    <string name="ph_component">pH:</string>
+    <string name="hardness_component">Hardness:</string>
+    <string name="solids_component">Solids:</string>
+    <string name="chloramines_component">Chloramines:</string>
+    <string name="sulfate_component">Sulfate:</string>
+    <string name="conductivity_component">Conductivity:</string>
+    <string name="organic_carbon_component">Organic carbon:</string>
+    <string name="trihalomethanes_component">Trihalomethanes:</string>
+    <string name="turbidity_component">Turbidity</string>
 </resources>

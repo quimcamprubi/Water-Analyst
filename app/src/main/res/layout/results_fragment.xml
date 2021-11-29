@@ -29,7 +29,286 @@
             tools:layout_constraintTop_creator="1"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSecondary"
-            android:text="@{viewModel.isDataReceived? @string/water_components_read_title : @string/read_bl_data_subtitle}"/>
+            android:text="@string/read_bl_data_subtitle"/>
 
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            card_view:layout_constraintTop_toBottomOf="@id/section_label"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            android:alpha="1"
+            android:foreground="?selectableItemBackground"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="2dp"
+            card_view:contentPadding="10dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/components_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/ph_title"
+                    android:layout_marginTop="@dimen/margin_4"
+                    android:layout_marginBottom="@dimen/margin_8"
+                    tools:text="Analyzed water"
+                    android:text="@string/components_card_title"/>
+
+                <TextView
+                    android:id="@+id/ph_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/components_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/hardness_title"
+                    tools:text="pH:"
+                    android:text="@string/ph_component"/>
+
+                <TextView
+                    android:id="@+id/ph_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/ph_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/ph_title"
+                    card_view:layout_constraintStart_toEndOf="@id/ph_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.pH}"/>
+
+                <TextView
+                    android:id="@+id/hardness_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/ph_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/solids_title"
+                    tools:text="Hardness:"
+                    android:text="@string/hardness_component"/>
+
+                <TextView
+                    android:id="@+id/hardness_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/hardness_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/hardness_title"
+                    card_view:layout_constraintStart_toEndOf="@id/hardness_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.hardness}"/>
+
+                <TextView
+                    android:id="@+id/solids_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/hardness_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/chloramines_title"
+                    tools:text="Solids:"
+                    android:text="@string/solids_component"/>
+
+                <TextView
+                    android:id="@+id/solids_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/solids_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/solids_title"
+                    card_view:layout_constraintStart_toEndOf="@id/solids_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.solids}"/>
+
+                <TextView
+                    android:id="@+id/chloramines_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/solids_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/sulfate_title"
+                    tools:text="Chloramines:"
+                    android:text="@string/chloramines_component"/>
+
+                <TextView
+                    android:id="@+id/chloramines_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/chloramines_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/chloramines_title"
+                    card_view:layout_constraintStart_toEndOf="@id/chloramines_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.chloramines}"/>
+
+                <TextView
+                    android:id="@+id/sulfate_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/chloramines_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/sulfate_title"
+                    tools:text="Sulfate:"
+                    android:text="@string/sulfate_component"/>
+
+                <TextView
+                    android:id="@+id/sulfate_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/sulfate_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/sulfate_title"
+                    card_view:layout_constraintStart_toEndOf="@id/sulfate_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.sulfate}"/>
+
+                <TextView
+                    android:id="@+id/conductivity_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/sulfate_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/organic_carbon_title"
+                    tools:text="Conductivity:"
+                    android:text="@string/conductivity_component"/>
+
+                <TextView
+                    android:id="@+id/conducitivity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/conductivity_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/conductivity_title"
+                    card_view:layout_constraintStart_toEndOf="@id/conductivity_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.conductivity}"/>
+
+                <TextView
+                    android:id="@+id/organic_carbon_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/conductivity_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/trihalomethanes_title"
+                    tools:text="Organic carbon:"
+                    android:text="@string/organic_carbon_component"/>
+
+                <TextView
+                    android:id="@+id/organic_carbon_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/organic_carbon_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/organic_carbon_title"
+                    card_view:layout_constraintStart_toEndOf="@id/organic_carbon_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.organicCarbon}"/>
+
+                <TextView
+                    android:id="@+id/trihalomethanes_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/organic_carbon_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintBottom_toTopOf="@id/turbidity_title"
+                    tools:text="Trihalomethanes:"
+                    android:text="@string/trihalomethanes_component"/>
+
+                <TextView
+                    android:id="@+id/trihalomethanes_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/trihalomethanes_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/trihalomethanes_title"
+                    card_view:layout_constraintStart_toEndOf="@id/trihalomethanes_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.trihalomethanes}"/>
+
+                <TextView
+                    android:id="@+id/turbidity_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/trihalomethanes_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="Turbidity:"
+                    android:text="@string/turbidity_component"/>
+
+                <TextView
+                    android:id="@+id/turbidity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/turbidity_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/turbidity_title"
+                    card_view:layout_constraintStart_toEndOf="@id/turbidity_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.turbidity}"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/section_label"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_12"
             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -29,6 +29,7 @@
             tools:layout_constraintTop_creator="1"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSecondary"
+            android:gravity="center"
             android:text="@{viewModel.isBluetoothConnected? @string/read_bl_data_subtitle: @string/tab_welcome_1}"/>
 
         <com.google.android.material.button.MaterialButton
