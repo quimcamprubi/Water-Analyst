@@ -343,6 +343,6 @@
             android:text="@string/login_button"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:visibility="@{!viewModel.isLoggedIn()}"/>
+            android:visibility="visible"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -64,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     fun loginOnClick() {
         val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client))
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         val googleClient = GoogleSignIn.getClient(this, googleConf)
@@ -148,7 +146,6 @@ class MainActivity : AppCompatActivity() {
             } catch(e: ApiException) {
                 showAlert()
             }
-
         }
     }
 }

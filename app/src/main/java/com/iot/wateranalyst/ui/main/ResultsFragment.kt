@@ -33,9 +33,6 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         pageViewModel = ViewModelProvider(this).get(PageViewModel::class.java).apply {
             setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
         }
-        binding.googleLoginButton.setOnClickListener {
-            (activity as MainActivity).loginOnClick()
-        }
     }
 
     override fun onAttach(context: Context) {
@@ -66,6 +63,9 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding.viewModel = viewModel
+        binding.googleLoginButton.setOnClickListener {
+            (activity as MainActivity).loginOnClick()
+        }
     }
 
     companion object {
