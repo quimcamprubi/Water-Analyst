@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "569914852044",
+    "project_id": "water-analyst-328009",
+    "storage_bucket": "water-analyst-328009.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569914852044:android:d59b3d666b7399153a3869",
+        "android_client_info": {
+          "package_name": "com.iot.wateranalyst"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569914852044-q649ejnk6mnudfoddto74tup9fksanco.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iot.wateranalyst",
+            "certificate_hash": "aedb7f057adb4739d7e74a900ab9fac5498134a8"
+          }
+        },
+        {
+          "client_id": "569914852044-8iuo8g2460i54te45b27hl3vd5u7pgr2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvDXnOPznCZUmuhpJeUJe9CYHagp_QvlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569914852044-8iuo8g2460i54te45b27hl3vd5u7pgr2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

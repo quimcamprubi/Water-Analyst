@@ -1,21 +1,28 @@
 package com.iot.wateranalyst
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.iot.wateranalyst.databinding.ActivityMainBinding
 import com.iot.wateranalyst.ui.main.DataUpdateListener
 import com.iot.wateranalyst.ui.main.SectionsPagerAdapter
 import com.iot.wateranalyst.ui.main.WaterData
 import java.util.*
 
-
+const val GOOGLE_SIGN_IN = 100
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var isDarkMode = false
@@ -53,6 +60,17 @@ class MainActivity : AppCompatActivity() {
         if (email != null && provider != null && name != null){
             viewModel.isLoggedIn.postValue(true)
         }
+    }
+
+    fun loginOnClick() {
+        val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client))
+            .requestEmail()
+            .build()
+        val googleClient = GoogleSignIn.getClient(this, googleConf)
+        googleClient.signOut()
+
+        startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
     }
 
     override fun onResume() {
@@ -100,5 +118,37 @@ class MainActivity : AppCompatActivity() {
         return WaterData(strs.get(0).toFloat(), strs.get(1).toFloat(), strs.get(2).toFloat(), strs.get(3).toFloat(),
             strs.get(4).toFloat(), strs.get(5).toFloat(), strs.get(6).toFloat(), strs.get(7).toFloat(),
             strs.get(8).toFloat())
+    }
+
+    private fun showAlert() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage("There was an error in the authentication")
+        builder.setPositiveButton("Accept", null)
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GOOGLE_SIGN_IN){
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try{
+                val account = task.getResult(ApiException::class.java)
+                if (account != null){
+                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                    FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener{
+                        if (it.isSuccessful){
+                            viewModel.isLoggedIn.postValue(true)
+                        } else {
+                            showAlert()
+                        }
+                    }
+                }
+            } catch(e: ApiException) {
+                showAlert()
+            }
+
+        }
     }
 }
