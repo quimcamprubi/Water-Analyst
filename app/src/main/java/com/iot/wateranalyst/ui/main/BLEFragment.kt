@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.button.MaterialButton
 import com.iot.wateranalyst.MainActivity
+import com.iot.wateranalyst.MainViewModel
 import com.iot.wateranalyst.databinding.BleFragmentLayoutBinding
 import kotlinx.android.synthetic.main.ble_fragment_layout.*
 import timber.log.Timber
@@ -50,7 +51,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: BleFragmentLayoutBinding? = null
-    private lateinit var viewModel: BLEFragmentViewModel
+    private lateinit var viewModel: MainViewModel
     private lateinit var bluetoothGatt: BluetoothGatt
     private var isBluetoothConnected: Boolean = false
     private var resultArray = arrayListOf<Byte>()
@@ -114,7 +115,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(BLEFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding.viewModel = viewModel
     }
 

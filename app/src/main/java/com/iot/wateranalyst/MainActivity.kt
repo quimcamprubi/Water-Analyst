@@ -1,9 +1,12 @@
 package com.iot.wateranalyst
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.iot.wateranalyst.databinding.ActivityMainBinding
@@ -19,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     var rawList = arrayListOf<Byte>()
     private lateinit var viewPager: ViewPager
     private var listeners = mutableListOf<DataUpdateListener>()
+    private lateinit var viewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isDarkMode = when (this.resources.configuration.uiMode.and(
@@ -26,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             Configuration.UI_MODE_NIGHT_YES -> true
             else -> false
         }
-
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -36,6 +41,18 @@ class MainActivity : AppCompatActivity() {
         val tabs: TabLayout = binding.tabs
         tabs.setupWithViewPager(viewPager)
 
+        session()
+    }
+
+    private fun session(){
+        val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
+        val email = prefs.getString("email", null)
+        val name = prefs.getString("name", null)
+        val provider = prefs.getString("provider", null)
+
+        if (email != null && provider != null && name != null){
+            viewModel.isLoggedIn.postValue(true)
+        }
     }
 
     override fun onResume() {

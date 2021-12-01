@@ -1,12 +1,15 @@
-package com.iot.wateranalyst.ui.main
+package com.iot.wateranalyst
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.iot.wateranalyst.ui.main.WaterData
 
-class ResultsFragmentViewModel(application: Application ) : AndroidViewModel(application) {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val context = getApplication<Application>().applicationContext
     lateinit var waterData: WaterData
+    val isScanning = MutableLiveData<Boolean>(false)
+    val isBluetoothConnected = MutableLiveData<Boolean>(false)
     val isDataReceived = MutableLiveData<Boolean>(false)
     val isLoggedIn = MutableLiveData<Boolean>(false)
     val pH = MutableLiveData<String>()

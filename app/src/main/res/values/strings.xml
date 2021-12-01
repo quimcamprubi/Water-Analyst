@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Water Analyst</string>
+    <string name="prefs_file">com.iot.wateranalyst.PREFERENCE_FILE_KEY</string>
     <string name="tab_text_1">Receive data</string>
     <string name="tab_text_2">Water report</string>
     <string name="tab_welcome_1">First, connect to a compatible BLE device</string>
@@ -21,4 +22,6 @@
     <string name="organic_carbon_component">Organic carbon:</string>
     <string name="trihalomethanes_component">Trihalomethanes:</string>
     <string name="turbidity_component">Turbidity</string>
+    <string name="login_message">Logging in is required in order to compute water quality</string>
+    <string name="login_button">Log in with Google</string>
 </resources>

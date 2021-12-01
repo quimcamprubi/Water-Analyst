@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.iot.wateranalyst.MainActivity
+import com.iot.wateranalyst.MainViewModel
 import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.ResultsFragmentBinding
 
@@ -21,7 +22,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: ResultsFragmentBinding? = null
-    private lateinit var viewModel: ResultsFragmentViewModel
+    private lateinit var viewModel: MainViewModel
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -60,7 +61,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ResultsFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding.viewModel = viewModel
     }
 

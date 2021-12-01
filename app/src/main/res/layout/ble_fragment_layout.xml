@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.iot.wateranalyst.ui.main.BLEFragmentViewModel"/>
+            type="com.iot.wateranalyst.MainViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +18,7 @@
             android:id="@+id/section_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/margin_12"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
@@ -34,26 +34,24 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ble_scan_stop_button"
-            android:visibility="visible"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/section_label"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:backgroundTint="@{viewModel.isScanning? @color/red : @color/green}"
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingTop="@dimen/margin_18"
+            android:paddingRight="@dimen/button_padding"
+            android:paddingBottom="@dimen/margin_18"
+            android:text="@{viewModel.isScanning? @string/stop_scan: @string/scan_for_ble_devices}"
+            android:textColor="@{viewModel.isScanning? @color/white : @color/black}"
+            android:textSize="18sp"
+            android:visibility="visible"
+            app:cornerRadius="@dimen/corner_radius"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:text="@{viewModel.isScanning? @string/stop_scan: @string/scan_for_ble_devices}"
-            android:paddingLeft="@dimen/button_padding"
-            android:paddingRight="@dimen/button_padding"
-            android:paddingTop="@dimen/margin_18"
-            android:paddingBottom="@dimen/margin_18"
-            app:cornerRadius="@dimen/corner_radius"
-            android:textSize="18sp"
-            tools:text="Button"
-            android:backgroundTint="@{viewModel.isScanning? @color/red : @color/green}"
-            android:textColor="@{viewModel.isScanning? @color/white : @color/black}"/>
+            app:layout_constraintTop_toBottomOf="@+id/section_label"
+            tools:text="Button" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/scan_results_recycler_view"
@@ -88,8 +86,6 @@
             android:textSize="18sp"
             tools:text="Button"
             android:textColor="@color/white"/>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
