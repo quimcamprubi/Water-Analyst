@@ -12,6 +12,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val isBluetoothConnected = MutableLiveData<Boolean>(false)
     val isDataReceived = MutableLiveData<Boolean>(false)
     val isLoggedIn = MutableLiveData<Boolean>(false)
+    fun getIsLoggedIn(): MutableLiveData<Boolean> {
+        return isLoggedIn
+    }
     val pH = MutableLiveData<String>()
     val hardness = MutableLiveData<String>()
     val solids = MutableLiveData<String>()

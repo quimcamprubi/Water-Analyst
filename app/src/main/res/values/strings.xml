@@ -24,4 +24,5 @@
     <string name="turbidity_component">Turbidity</string>
     <string name="login_message">Logging in is required in order to compute water quality</string>
     <string name="login_button">Log in with Google</string>
+    <string name="logout_button">Log out</string>
 </resources>

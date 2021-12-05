@@ -6,19 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.iot.wateranalyst.MainActivity
 import com.iot.wateranalyst.MainViewModel
 import com.iot.wateranalyst.R
 import com.iot.wateranalyst.databinding.ResultsFragmentBinding
+import kotlinx.android.synthetic.main.results_fragment.*
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), DataUpdateListener{
+class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), DataUpdateListener {
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: ResultsFragmentBinding? = null
@@ -52,24 +53,20 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         _binding = ResultsFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         val root = binding.root
-
         val textView: TextView = binding.sectionLabel
         textView.text = getString(R.string.tab_welcome_2)
 
-        return root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(activity!!).get(MainViewModel::class.java)
         binding.viewModel = viewModel
         binding.googleLoginButton.setOnClickListener {
             (activity as MainActivity).loginOnClick()
         }
+        return root
     }
 
     companion object {
         private const val ARG_SECTION_NUMBER = "section_number"
+
         @JvmStatic
         fun newInstance(sectionNumber: Int): ResultsFragment {
             return ResultsFragment().apply {
@@ -85,7 +82,11 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         _binding = null
     }
 
-    override fun onDataUpdate(isDataReceived: Boolean, waterData: WaterData, rawData: ArrayList<Byte>) {
+    override fun onDataUpdate(
+        isDataReceived: Boolean,
+        waterData: WaterData,
+        rawData: ArrayList<Byte>
+    ) {
         viewModel.isDataReceived.postValue(isDataReceived)
         viewModel.pH.postValue(waterData.pH.toString())
         viewModel.hardness.postValue(waterData.hardness.toString())

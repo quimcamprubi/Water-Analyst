@@ -16,9 +16,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.iot.wateranalyst.databinding.ActivityMainBinding
 import com.iot.wateranalyst.ui.main.DataUpdateListener
+import com.iot.wateranalyst.ui.main.ResultsFragment
 import com.iot.wateranalyst.ui.main.SectionsPagerAdapter
 import com.iot.wateranalyst.ui.main.WaterData
+import kotlinx.android.synthetic.main.results_fragment.*
 import java.util.*
+
 
 const val GOOGLE_SIGN_IN = 100
 class MainActivity : AppCompatActivity() {
@@ -39,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager, isDarkMode)
         viewPager = binding.viewPager
         viewPager.adapter = sectionsPagerAdapter
@@ -53,9 +55,8 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val email = prefs.getString("email", null)
         val name = prefs.getString("name", null)
-        val provider = prefs.getString("provider", null)
 
-        if (email != null && provider != null && name != null){
+        if (email != null && name != null){
             viewModel.isLoggedIn.postValue(true)
         }
     }
@@ -138,6 +139,10 @@ class MainActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener{
                         if (it.isSuccessful){
                             viewModel.isLoggedIn.postValue(true)
+                            val prefs = getSharedPreferences(getString(R.string.prefs_file), MODE_PRIVATE).edit()
+                            prefs.putString("email", account.email?:"")
+                            prefs.putString("name", account.displayName?:"")
+                            prefs.apply()
                         } else {
                             showAlert()
                         }
