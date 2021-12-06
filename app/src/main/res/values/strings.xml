@@ -25,4 +25,10 @@
     <string name="login_message">Logging in is required in order to compute water quality</string>
     <string name="login_button">Log in with Google</string>
     <string name="logout_button">Log out</string>
+    <string name="send_data_button">Get prediction</string>
+    <string name="water_results">Water analysis results</string>
+    <string name="water_potability_message">Potability:</string>
+    <string name="water_quality_message">Water quality:</string>
+    <string name="possible_related_diseases">Possible related diseases:</string>
+    <string name="disclaimer_message">Disclaimer: All the analysis results are purely orientative, drink the analyzed water at your own risk. Generally, we do not recommend drinking water with worse potability than 60% and with worse water quality than \"Good\".</string>
 </resources>

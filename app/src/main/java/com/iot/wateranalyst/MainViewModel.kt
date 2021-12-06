@@ -7,14 +7,11 @@ import com.iot.wateranalyst.ui.main.WaterData
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val context = getApplication<Application>().applicationContext
-    lateinit var waterData: WaterData
     val isScanning = MutableLiveData<Boolean>(false)
     val isBluetoothConnected = MutableLiveData<Boolean>(false)
     val isDataReceived = MutableLiveData<Boolean>(false)
     val isLoggedIn = MutableLiveData<Boolean>(false)
-    fun getIsLoggedIn(): MutableLiveData<Boolean> {
-        return isLoggedIn
-    }
+    val isPredictionAvailable = MutableLiveData<Boolean>(false)
     val pH = MutableLiveData<String>()
     val hardness = MutableLiveData<String>()
     val solids = MutableLiveData<String>()
@@ -24,4 +21,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val organicCarbon = MutableLiveData<String>()
     val trihalomethanes = MutableLiveData<String>()
     val turbidity = MutableLiveData<String>()
+    val potabilityIndex = MutableLiveData<String>()
+    val rawPotability = MutableLiveData<Double>()
+    val waterQuality = MutableLiveData<String>()
+    val relatedDiseases = MutableLiveData<String>()
+    val isResponseReceived = MutableLiveData<Boolean>(false)
 }

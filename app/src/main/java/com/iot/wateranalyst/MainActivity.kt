@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
         val tabs: TabLayout = binding.tabs
         tabs.setupWithViewPager(viewPager)
 
+        binding.logoutButton.setOnClickListener {
+            logoutOnClick()
+        }
+
         session()
     }
 
@@ -58,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         if (email != null && name != null){
             viewModel.isLoggedIn.postValue(true)
+            binding.logoutButton.visibility = View.VISIBLE
         }
     }
 
@@ -70,6 +76,16 @@ class MainActivity : AppCompatActivity() {
         googleClient.signOut()
 
         startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
+    }
+
+    private fun logoutOnClick() {
+        val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
+        prefs.clear()
+        prefs.apply()
+        viewModel.isLoggedIn.postValue(false)
+        viewModel.isPredictionAvailable.postValue(false)
+        FirebaseAuth.getInstance().signOut()
+        binding.logoutButton.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -139,10 +155,12 @@ class MainActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener{
                         if (it.isSuccessful){
                             viewModel.isLoggedIn.postValue(true)
+                            if (viewModel.isDataReceived.value == true) viewModel.isPredictionAvailable.postValue(true)
                             val prefs = getSharedPreferences(getString(R.string.prefs_file), MODE_PRIVATE).edit()
                             prefs.putString("email", account.email?:"")
                             prefs.putString("name", account.displayName?:"")
                             prefs.apply()
+                            binding.logoutButton.visibility = View.VISIBLE
                         } else {
                             showAlert()
                         }

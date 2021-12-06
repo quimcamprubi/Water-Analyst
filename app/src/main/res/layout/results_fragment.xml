@@ -12,31 +12,29 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/margin_16"
+        android:paddingEnd="@dimen/margin_16">
 
         <TextView
             android:id="@+id/section_label"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/margin_12"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintTop_creator="1"
-            android:textSize="16sp"
+            android:text="@string/read_bl_data_subtitle"
             android:textColor="?attr/colorOnSecondary"
-            android:text="@string/read_bl_data_subtitle"/>
+            android:textSize="16sp"
+            android:visibility="@{!viewModel.isDataReceived()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cardView"/>
 
         <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
             card_view:layout_constraintTop_toBottomOf="@id/section_label"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
@@ -57,14 +55,13 @@
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorOnSecondary"
+                    android:textColor="@color/light_blue"
                     android:layout_marginStart="@dimen/margin_8"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     card_view:layout_constraintBottom_toTopOf="@id/ph_title"
                     android:layout_marginTop="@dimen/margin_4"
                     android:layout_marginBottom="@dimen/margin_8"
-                    tools:text="Analyzed water"
                     android:text="@string/components_card_title"/>
 
                 <TextView
@@ -344,5 +341,150 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             android:visibility="@{!viewModel.isLoggedIn()}"/>
+
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/resultsCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            card_view:layout_constraintTop_toBottomOf="@id/googleLoginButton"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            android:alpha="1"
+            android:foreground="?selectableItemBackground"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="2dp"
+            card_view:contentPadding="10dp"
+            android:visibility="@{viewModel.isResponseReceived()}">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/results_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/light_blue"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="@dimen/margin_4"
+                    android:layout_marginBottom="@dimen/margin_8"
+                    android:text="@string/water_results"/>
+
+                <TextView
+                    android:id="@+id/potability_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/results_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/water_potability_message"/>
+
+                <TextView
+                    android:id="@+id/potability_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:setTextColor="@{viewModel.rawPotability}"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/potability_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/potability_title"
+                    card_view:layout_constraintStart_toEndOf="@id/potability_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.potabilityIndex}"/>
+
+                <TextView
+                    android:id="@+id/water_quality_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/potability_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/water_quality_message"/>
+
+                <TextView
+                    android:id="@+id/water_quality_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:setTextColorWithMessage="@{viewModel.waterQuality}"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/water_quality_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/water_quality_title"
+                    card_view:layout_constraintStart_toEndOf="@id/water_quality_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.waterQuality}"/>
+
+                <TextView
+                    android:id="@+id/related_diseases_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_8"
+                    app:layout_constraintTop_toBottomOf="@id/water_quality_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/possible_related_diseases"/>
+
+                <TextView
+                    android:id="@+id/related_diseases_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:textSize="14sp"
+                    android:layout_marginStart="@dimen/margin_8"
+                    card_view:layout_constraintTop_toTopOf="@id/related_diseases_title"
+                    card_view:layout_constraintBottom_toBottomOf="@id/related_diseases_title"
+                    card_view:layout_constraintStart_toEndOf="@id/related_diseases_title"
+                    tools:text="3142124"
+                    android:text="@{viewModel.relatedDiseases}"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/disclaimer_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/disclaimer_message"
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="16sp"
+            android:visibility="@{viewModel.isResponseReceived()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resultsCardView"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sendDataButton"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingTop="@dimen/margin_18"
+            android:paddingRight="@dimen/button_padding"
+            android:paddingBottom="@dimen/margin_18"
+            android:layout_marginBottom="@dimen/margin_20"
+            android:text="@string/send_data_button"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="@{viewModel.isPredictionAvailable()}"
+            app:cornerRadius="@dimen/corner_radius"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

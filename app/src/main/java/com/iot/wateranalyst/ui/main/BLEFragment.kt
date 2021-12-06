@@ -115,7 +115,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(activity!!).get(MainViewModel::class.java)
         binding.viewModel = viewModel
     }
 
@@ -232,6 +232,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                         gatt.requestMtu(GATT_MAX_MTU_SIZE)
                         binding.readDataButton.setOnClickListener {
                             setNotificationsAndRead(gatt)
+                            viewModel.isResponseReceived.postValue(false)
                         }
                     }
                 }
