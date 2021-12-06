@@ -227,7 +227,6 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                     bluetoothGatt = gatt
                     viewModel.isBluetoothConnected.postValue(true)
                     Handler(Looper.getMainLooper()).post {
-                        binding.readDataButton.visibility=View.VISIBLE
                         gatt.discoverServices()
                         gatt.requestMtu(GATT_MAX_MTU_SIZE)
                         binding.readDataButton.setOnClickListener {

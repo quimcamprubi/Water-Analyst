@@ -17,10 +17,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.iot.wateranalyst.databinding.ActivityMainBinding
 import com.iot.wateranalyst.ui.main.DataUpdateListener
-import com.iot.wateranalyst.ui.main.ResultsFragment
 import com.iot.wateranalyst.ui.main.SectionsPagerAdapter
 import com.iot.wateranalyst.ui.main.WaterData
-import kotlinx.android.synthetic.main.results_fragment.*
 import java.util.*
 
 
@@ -130,9 +128,9 @@ class MainActivity : AppCompatActivity() {
     fun String.toWaterData(): WaterData {
         val strs = this.split(";")
         strs.dropLast(1)
-        return WaterData(strs.get(0).toFloat(), strs.get(1).toFloat(), strs.get(2).toFloat(), strs.get(3).toFloat(),
-            strs.get(4).toFloat(), strs.get(5).toFloat(), strs.get(6).toFloat(), strs.get(7).toFloat(),
-            strs.get(8).toFloat())
+        return WaterData(strs.get(0).toDouble(), strs.get(1).toDouble(), strs.get(2).toDouble(), strs.get(3).toDouble(),
+            strs.get(4).toDouble(), strs.get(5).toDouble(), strs.get(6).toDouble(), strs.get(7).toDouble(),
+            strs.get(8).toDouble())
     }
 
     private fun showAlert() {

@@ -2,7 +2,6 @@ package com.iot.wateranalyst.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -116,6 +115,25 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
     }
 
     private fun getPrediction() {
+        // You can uncomment some of these Water Data mocks in order to test the Cloud Function with different data than the one obtained from the board.
+        // Very Good water quality:
+        // this.waterData = WaterData(6.800119090315878,242.0080815075149,39143.40332881009,9.50169458771527,187.1707143624393,376.45659307467866,11.43246634722874,73.7772750262626,3.854939899721073)
+
+        // Good water quality:
+        // this.waterData = WaterData(4.68886106249815,234.89370257412287,28174.620516250765,10.850036483517218,187.42413089573415,444.8543208302114,11.784798842667612,89.01097411544157,2.8968521864425583)
+
+        // Normal water quality:
+        // this.waterData = WaterData(5.117390302624234,225.6574044119953,30914.111579007564,6.207729477942272,371.6493915314526,356.86228711669946,8.073420571182282,77.3881380783752,3.9371884418353353)
+
+        // Slightly bad water quality:
+        // this.waterData = WaterData(6.660212026118103,168.28374685651832,30944.363591242687,5.858769130547582,310.93085831787846,523.6712975009444,17.88423519296481,77.0423180517003,3.7497012410996176)
+
+        // Bad water quality:
+        // this.waterData = WaterData(4.961352728384606,166.25996162297542,22229.230089547444,9.922077892734912,295.131831185993,449.14719149056054,12.001547405946155,63.4279786441529,3.902837833888625)
+
+        // Very bad water quality:
+        // this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
+
         var requestData = waterData.pH.toString().plus(",")
         requestData = requestData.plus(waterData.hardness.toString()).plus(",")
         requestData = requestData.plus(waterData.solids.toString()).plus(",")
@@ -166,7 +184,10 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
                         val potabilityPercentage = String.format("%.2f", responseList[0].toFloat() * 100)
                         viewModel.potabilityIndex.postValue(potabilityPercentage.plus("%"))
                         viewModel.waterQuality.postValue(responseList[1])
-                        viewModel.relatedDiseases.postValue(responseList[2])
+                        if (responseList.size == 3) {
+                            viewModel.relatedDiseases.postValue(responseList[2])
+                            viewModel.isDiseasesDataAvailable.postValue(true)
+                        }
                         viewModel.isResponseReceived.postValue(true)
                     }
                     Timber.e(response)

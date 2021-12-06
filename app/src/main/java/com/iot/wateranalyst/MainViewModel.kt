@@ -26,4 +26,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val waterQuality = MutableLiveData<String>()
     val relatedDiseases = MutableLiveData<String>()
     val isResponseReceived = MutableLiveData<Boolean>(false)
+    val isDiseasesDataAvailable = MutableLiveData<Boolean>(false)
 }

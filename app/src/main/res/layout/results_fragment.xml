@@ -435,7 +435,8 @@
                     android:layout_marginStart="@dimen/margin_8"
                     app:layout_constraintTop_toBottomOf="@id/water_quality_title"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:text="@string/possible_related_diseases"/>
+                    android:text="@string/possible_related_diseases"
+                    android:visibility="@{viewModel.isDiseasesDataAvailable()}"/>
 
                 <TextView
                     android:id="@+id/related_diseases_value"
@@ -448,7 +449,8 @@
                     card_view:layout_constraintBottom_toBottomOf="@id/related_diseases_title"
                     card_view:layout_constraintStart_toEndOf="@id/related_diseases_title"
                     tools:text="3142124"
-                    android:text="@{viewModel.relatedDiseases}"/>
+                    android:text="@{viewModel.relatedDiseases}"
+                    android:visibility="@{viewModel.isDiseasesDataAvailable()}"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
