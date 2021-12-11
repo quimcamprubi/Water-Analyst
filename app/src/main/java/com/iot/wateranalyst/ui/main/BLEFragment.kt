@@ -232,6 +232,7 @@ class BLEFragment(private val isDarkMode: Boolean = false) : Fragment() {
                         binding.readDataButton.setOnClickListener {
                             setNotificationsAndRead(gatt)
                             viewModel.isResponseReceived.postValue(false)
+                            viewModel.isDiseasesDataAvailable.postValue(false)
                         }
                     }
                 }

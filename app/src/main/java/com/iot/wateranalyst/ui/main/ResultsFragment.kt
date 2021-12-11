@@ -96,21 +96,21 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
 
     override fun onDataUpdate(
         isDataReceived: Boolean,
-        waterData: WaterData,
+        receivedWaterData: WaterData,
         rawData: ArrayList<Byte>
     ) {
         viewModel.isDataReceived.postValue(isDataReceived)
         if (viewModel.isLoggedIn.value == true) viewModel.isPredictionAvailable.postValue(true)
-        viewModel.pH.postValue(waterData.pH.toString())
-        viewModel.hardness.postValue(waterData.hardness.toString())
-        viewModel.solids.postValue(waterData.solids.toString())
-        viewModel.chloramines.postValue(waterData.chloramines.toString())
-        viewModel.sulfate.postValue(waterData.sulfate.toString())
-        viewModel.conductivity.postValue(waterData.conductivity.toString())
-        viewModel.organicCarbon.postValue(waterData.organicCarbon.toString())
-        viewModel.trihalomethanes.postValue(waterData.trihalomethanes.toString())
-        viewModel.turbidity.postValue(waterData.turbidity.toString())
-        this.waterData = waterData
+        viewModel.pH.postValue(receivedWaterData.pH.toString())
+        viewModel.hardness.postValue(receivedWaterData.hardness.toString())
+        viewModel.solids.postValue(receivedWaterData.solids.toString())
+        viewModel.chloramines.postValue(receivedWaterData.chloramines.toString())
+        viewModel.sulfate.postValue(receivedWaterData.sulfate.toString())
+        viewModel.conductivity.postValue(receivedWaterData.conductivity.toString())
+        viewModel.organicCarbon.postValue(receivedWaterData.organicCarbon.toString())
+        viewModel.trihalomethanes.postValue(receivedWaterData.trihalomethanes.toString())
+        viewModel.turbidity.postValue(receivedWaterData.turbidity.toString())
+        this.waterData = receivedWaterData
         binding.sectionLabel.visibility = View.GONE
     }
 
@@ -134,15 +134,15 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         // Very bad water quality:
         // this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
 
-        var requestData = waterData.pH.toString().plus(",")
-        requestData = requestData.plus(waterData.hardness.toString()).plus(",")
-        requestData = requestData.plus(waterData.solids.toString()).plus(",")
-        requestData = requestData.plus(waterData.chloramines.toString()).plus(",")
-        requestData = requestData.plus(waterData.sulfate.toString()).plus(",")
-        requestData = requestData.plus(waterData.conductivity.toString()).plus(",")
-        requestData = requestData.plus(waterData.organicCarbon.toString()).plus(",")
-        requestData = requestData.plus(waterData.trihalomethanes.toString()).plus(",")
-        requestData = requestData.plus(waterData.turbidity.toString())
+        var requestData = this.waterData.pH.toString().plus(",")
+        requestData = requestData.plus(this.waterData.hardness.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.solids.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.chloramines.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.sulfate.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.conductivity.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.organicCarbon.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.trihalomethanes.toString()).plus(",")
+        requestData = requestData.plus(this.waterData.turbidity.toString())
 
         sendPostRequest(requestData)
     }
@@ -184,8 +184,8 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
                         val potabilityPercentage = String.format("%.2f", responseList[0].toFloat() * 100)
                         viewModel.potabilityIndex.postValue(potabilityPercentage.plus("%"))
                         viewModel.waterQuality.postValue(responseList[1])
-                        if (responseList.size == 3) {
-                            viewModel.relatedDiseases.postValue(responseList[2])
+                        if (responseList.size > 2) {
+                            viewModel.relatedDiseases.postValue(responseList.drop(2).toStringList())
                             viewModel.isDiseasesDataAvailable.postValue(true)
                         }
                         viewModel.isResponseReceived.postValue(true)
@@ -212,5 +212,15 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
                 val result = task.result?.data
                 JsonParser.parseString(Gson().toJson(result))
             }
+    }
+
+
+    fun List<String>.toStringList(): String {
+        var returnString = String()
+        for (string in this) {
+            returnString = returnString.plus(string).plus(", ")
+        }
+        returnString = returnString.dropLast(2)
+        return returnString
     }
 }
