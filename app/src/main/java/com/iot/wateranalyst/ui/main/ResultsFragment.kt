@@ -72,7 +72,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         binding.sendDataButton.setOnClickListener {
             getPrediction()
         }
-        functions = FirebaseFunctions.getInstance("europe-west2")
+        functions = FirebaseFunctions.getInstance("europe-west1")
         return root
     }
 
@@ -157,6 +157,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         // to run while the network call is being processed
         uiScope.launch(Dispatchers.IO) {
             val url = URL("https://europe-west2-water-analyst-328009.cloudfunctions.net/make_water_prediction")
+            //val url = URL("https://europe-west1-water-analyst-328009.cloudfunctions.net/make_water_prediction_reg\n")
             val httpURLConnection = url.openConnection() as HttpURLConnection
             httpURLConnection.requestMethod = "POST"
             httpURLConnection.setRequestProperty("Content-Type", "application/json") // The format of the content we're sending to the server
