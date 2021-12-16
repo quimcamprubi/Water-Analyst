@@ -69,6 +69,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         binding.googleLoginButton.setOnClickListener {
             (activity as MainActivity).loginOnClick()
         }
+        viewModel.isPredictionAvailable.postValue(true)
         binding.sendDataButton.setOnClickListener {
             getPrediction()
         }
@@ -132,7 +133,9 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         // this.waterData = WaterData(4.961352728384606,166.25996162297542,22229.230089547444,9.922077892734912,295.131831185993,449.14719149056054,12.001547405946155,63.4279786441529,3.902837833888625)
 
         // Very bad water quality:
-        // this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
+        this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
+
+        // If you use one of these mocks, you must also uncomment line 72 of this file.
 
         var requestData = this.waterData.pH.toString().plus(",")
         requestData = requestData.plus(this.waterData.hardness.toString()).plus(",")
@@ -156,8 +159,8 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         // We are using a Coroutine to not freeze up the main UI thread. This way, the app continues
         // to run while the network call is being processed
         uiScope.launch(Dispatchers.IO) {
+            // All code written here will be executed in this scope
             val url = URL("https://europe-west2-water-analyst-328009.cloudfunctions.net/make_water_prediction")
-            //val url = URL("https://europe-west1-water-analyst-328009.cloudfunctions.net/make_water_prediction_reg\n")
             val httpURLConnection = url.openConnection() as HttpURLConnection
             httpURLConnection.requestMethod = "POST"
             httpURLConnection.setRequestProperty("Content-Type", "application/json") // The format of the content we're sending to the server
