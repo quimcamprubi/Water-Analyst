@@ -69,7 +69,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         binding.googleLoginButton.setOnClickListener {
             (activity as MainActivity).loginOnClick()
         }
-        viewModel.isPredictionAvailable.postValue(true)
+        // viewModel.isPredictionAvailable.postValue(true) // Uncomment this line in order to use the mock Water Data.
         binding.sendDataButton.setOnClickListener {
             getPrediction()
         }
@@ -117,6 +117,8 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
 
     private fun getPrediction() {
         // You can uncomment some of these Water Data mocks in order to test the Cloud Function with different data than the one obtained from the board.
+        // IMPORTANT: If you use one of these mocks, you must also uncomment line 72 of this file.
+
         // Very Good water quality:
         // this.waterData = WaterData(6.800119090315878,242.0080815075149,39143.40332881009,9.50169458771527,187.1707143624393,376.45659307467866,11.43246634722874,73.7772750262626,3.854939899721073)
 
@@ -133,9 +135,7 @@ class ResultsFragment(private val isDarkMode: Boolean = false) : Fragment(), Dat
         // this.waterData = WaterData(4.961352728384606,166.25996162297542,22229.230089547444,9.922077892734912,295.131831185993,449.14719149056054,12.001547405946155,63.4279786441529,3.902837833888625)
 
         // Very bad water quality:
-        this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
-
-        // If you use one of these mocks, you must also uncomment line 72 of this file.
+        // this.waterData = WaterData(10.223862164528773,248.07173527013992,28749.716543528233,7.5134084658313025,393.66339551509645,283.6516335078445,13.789695317519886,84.60355617402357,2.672988736934779)
 
         var requestData = this.waterData.pH.toString().plus(",")
         requestData = requestData.plus(this.waterData.hardness.toString()).plus(",")
